@@ -34,13 +34,14 @@ const AuthPage = () => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-            <div className="glass-panel" style={{ padding: '40px', width: '100%', maxWidth: '400px' }}>
-                <h2 className="text-gradient" style={{ textAlign: 'center', marginBottom: '20px', fontSize: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, position: 'relative' }}>
+            <div className="auth-aura"></div>
+            <div className="glass-panel animate-fade-in" style={{ padding: '45px', width: '100%', maxWidth: '420px', zIndex: 1 }}>
+                <h2 className="text-gradient" style={{ textAlign: 'center', marginBottom: '30px', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
                     {isLogin ? 'Welcome Back' : 'Create Account'}
                 </h2>
                 
-                {error && <div style={{ color: 'var(--danger)', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
+                {error && <div style={{ color: 'var(--danger)', marginBottom: '20px', textAlign: 'center', background: 'rgba(239, 68, 68, 0.1)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)', fontSize: '0.9rem', fontWeight: 500 }}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

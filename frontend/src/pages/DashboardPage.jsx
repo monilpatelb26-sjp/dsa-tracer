@@ -187,15 +187,18 @@ const DashboardPage = () => {
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '25px', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
-                                <div style={{ display: 'flex', gap: '15px', fontSize: '0.8rem', color: 'var(--text-primary)' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                        <input type="checkbox" checked={topic.lectureDone} onChange={() => toggleTopicProgress(topic.id, 'lectureDone', topic.lectureDone)} style={{accentColor: 'var(--accent-primary)'}} /> Lecture
+                                <div style={{ display: 'flex', gap: '20px', fontSize: '0.8rem' }}>
+                                    <label className="modern-checkbox">
+                                        <input type="checkbox" checked={topic.lectureDone} onChange={() => toggleTopicProgress(topic.id, 'lectureDone', topic.lectureDone)} />
+                                        <div className="checkmark"></div> Lecture
                                     </label>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                        <input type="checkbox" checked={topic.practiceDone} onChange={() => toggleTopicProgress(topic.id, 'practiceDone', topic.practiceDone)} style={{accentColor: 'var(--accent-primary)'}} /> Practice
+                                    <label className="modern-checkbox">
+                                        <input type="checkbox" checked={topic.practiceDone} onChange={() => toggleTopicProgress(topic.id, 'practiceDone', topic.practiceDone)} />
+                                        <div className="checkmark"></div> Practice
                                     </label>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                        <input type="checkbox" checked={topic.dayDone} onChange={() => toggleTopicProgress(topic.id, 'dayDone', topic.dayDone)} style={{accentColor: 'var(--accent-primary)'}} /> Day ✓
+                                    <label className="modern-checkbox">
+                                        <input type="checkbox" checked={topic.dayDone} onChange={() => toggleTopicProgress(topic.id, 'dayDone', topic.dayDone)} />
+                                        <div className="checkmark"></div> Day ✓
                                     </label>
                                 </div>
                                 <button 
