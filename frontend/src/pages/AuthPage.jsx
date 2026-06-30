@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import { LogIn, UserPlus, Mail, Lock, AlertCircle } from 'lucide-react';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -34,63 +36,111 @@ const AuthPage = () => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, position: 'relative', overflow: 'hidden' }}>
+            <div className="cyber-orb orb-1"></div>
+            <div className="cyber-orb orb-2"></div>
             <div className="auth-aura"></div>
-            <div className="glass-panel animate-fade-in" style={{ padding: '45px', width: '100%', maxWidth: '420px', zIndex: 1 }}>
-                <h2 className="text-gradient" style={{ textAlign: 'center', marginBottom: '30px', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
-                    {isLogin ? 'Welcome Back' : 'Create Account'}
+            
+            <motion.div 
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="glass-panel" 
+                style={{ padding: '50px 40px', width: '100%', maxWidth: '440px', zIndex: 1 }}
+            >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <motion.div 
+                        initial={{ rotate: -180, scale: 0 }}
+                        animate={{ rotate: 0, scale: 1 }}
+                        transition={{ duration: 0.8, type: 'spring' }}
+                        style={{ background: 'var(--accent-glow-blue)', padding: '20px', borderRadius: '50%', boxShadow: '0 0 30px var(--accent-glow-blue)' }}
+                    >
+                        {isLogin ? <LogIn size={40} color="var(--accent-primary)" /> : <UserPlus size={40} color="var(--accent-secondary)" />}
+                    </motion.div>
+                </div>
+                
+                <h2 className={isLogin ? "text-gradient-accent" : "text-gradient"} style={{ textAlign: 'center', marginBottom: '35px', fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px' }}>
+                    {isLogin ? 'SYSTEM LOGIN' : 'INITIALIZE USER'}
                 </h2>
                 
-                {error && <div style={{ color: 'var(--danger)', marginBottom: '20px', textAlign: 'center', background: 'rgba(239, 68, 68, 0.1)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)', fontSize: '0.9rem', fontWeight: 500 }}>{error}</div>}
+                {error && (
+                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} style={{ color: 'var(--danger)', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 0, 85, 0.1)', padding: '12px 15px', borderRadius: '10px', border: '1px solid rgba(255, 0, 85, 0.3)', fontSize: '0.9rem', fontWeight: 600 }}>
+                        <AlertCircle size={18} /> {error}
+                    </motion.div>
+                )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input 
-                            type="email" 
-                            className="glass-input" 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+                    <div className="form-group" style={{ position: 'relative' }}>
+                        <label>Email Identification</label>
+                        <div style={{ position: 'relative' }}>
+                            <Mail style={{ position: 'absolute', top: '15px', left: '15px', color: 'var(--text-secondary)' }} size={20} />
+                            <input 
+                                type="email" 
+                                className="glass-input" 
+                                style={{ paddingLeft: '45px' }}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                placeholder="sys.admin@cyber.net"
+                            />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input 
-                            type="password" 
-                            className="glass-input" 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    {!isLogin && (
-                        <div className="form-group">
-                            <label>Confirm Password</label>
+                    
+                    <div className="form-group" style={{ position: 'relative' }}>
+                        <label>Security Key</label>
+                        <div style={{ position: 'relative' }}>
+                            <Lock style={{ position: 'absolute', top: '15px', left: '15px', color: 'var(--text-secondary)' }} size={20} />
                             <input 
                                 type="password" 
                                 className="glass-input" 
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                style={{ paddingLeft: '45px' }}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
+                                placeholder="••••••••••••"
                             />
                         </div>
+                    </div>
+
+                    {!isLogin && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="form-group" style={{ position: 'relative' }}>
+                            <label>Confirm Security Key</label>
+                            <div style={{ position: 'relative' }}>
+                                <Lock style={{ position: 'absolute', top: '15px', left: '15px', color: 'var(--text-secondary)' }} size={20} />
+                                <input 
+                                    type="password" 
+                                    className="glass-input" 
+                                    style={{ paddingLeft: '45px' }}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    placeholder="••••••••••••"
+                                />
+                            </div>
+                        </motion.div>
                     )}
-                    <button type="submit" className="glass-button" style={{ width: '100%', marginTop: '10px' }}>
-                        {isLogin ? 'Sign In' : 'Sign Up'}
-                    </button>
+                    
+                    <motion.button 
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        type="submit" 
+                        className="glass-button" 
+                        style={{ width: '100%', marginTop: '20px', padding: '16px', fontSize: '1.1rem' }}
+                    >
+                        {isLogin ? 'AUTHENTICATE' : 'ESTABLISH LINK'}
+                    </motion.button>
                 </form>
 
-                <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-secondary)' }}>
-                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>
+                    {isLogin ? "No access token? " : "Already established? "}
                     <span 
-                        style={{ color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 'bold' }} 
-                        onClick={() => setIsLogin(!isLogin)}
+                        style={{ color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }} 
+                        onClick={() => { setIsLogin(!isLogin); setError(''); }}
                     >
-                        {isLogin ? 'Sign Up' : 'Sign In'}
+                        {isLogin ? 'Initialize' : 'Authenticate'}
                     </span>
                 </p>
-            </div>
+            </motion.div>
         </div>
     );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { motion } from 'framer-motion';
+import { Calendar, Video, CheckCircle, RotateCw, Search, Plus, Play, ExternalLink } from 'lucide-react';
 
 const DashboardPage = () => {
     const { courseId } = useParams();
@@ -53,7 +55,7 @@ const DashboardPage = () => {
         }
     };
 
-    if (!course) return <div className="page-wrapper">Loading...</div>;
+    if (!course) return <div className="page-wrapper" style={{textAlign: 'center', marginTop: '100px', fontSize: '2rem'}}>INITIALIZING SYSTEMS...</div>;
 
     const filteredTopics = topics.filter(t => 
         (phaseFilter === 'All' || t.phase === phaseFilter) && 
@@ -66,50 +68,81 @@ const DashboardPage = () => {
     
     const daysDone = topics.filter(t => t.dayDone).length;
     const lecturesDone = topics.filter(t => t.lectureDone).length;
-    // Mock revisions done for now, could be fetched from API
     const revisionsDone = 0;
 
-    const StatCard = ({ label, value }) => (
-        <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', flex: 1 }}>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--accent-primary)', marginBottom: '5px' }}>{value}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', letterSpacing: '1px' }}>{label}</div>
-        </div>
+    const StatCard = ({ label, value, icon, color }) => (
+        <motion.div 
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="glass-panel bento-item"
+            style={{ borderTop: `2px solid ${color}` }}
+        >
+            <div style={{ color, marginBottom: '10px', filter: `drop-shadow(0 0 10px ${color})` }}>{icon}</div>
+            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#fff', marginBottom: '5px', textShadow: `0 0 15px ${color}` }}>{value}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', letterSpacing: '2px', fontWeight: 800 }}>{label}</div>
+        </motion.div>
     );
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 30, scale: 0.9 },
+        show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100 } }
+    };
+
     return (
-        <div className="page-wrapper animate-fade-in" style={{ maxWidth: '1200px' }}>
-            {/* Top Stats */}
-            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-                <StatCard label="DAYS DONE" value={daysDone} />
-                <StatCard label="LECTURES" value={lecturesDone} />
-                <StatCard label="SOLVED" value={solvedProblems} />
-                <StatCard label="REVISIONS DONE" value={revisionsDone} />
-            </div>
+        <div className="page-wrapper" style={{ maxWidth: '1400px' }}>
+            <div className="cyber-orb orb-1"></div>
+            <div className="cyber-orb orb-2"></div>
+            
+            <motion.h1 
+                initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }}
+                className="text-gradient-accent" 
+                style={{ fontSize: '3rem', marginBottom: '30px', textTransform: 'uppercase' }}
+            >
+                {course.title} // COMMAND CENTER
+            </motion.h1>
+
+            {/* Top Stats - BENTO GRID */}
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="bento-grid">
+                <StatCard label="SYSTEM DAYS" value={daysDone} icon={<Calendar size={32} />} color="var(--accent-primary)" />
+                <StatCard label="DATA STREAMS" value={lecturesDone} icon={<Video size={32} />} color="var(--accent-secondary)" />
+                <StatCard label="MODULES SECURED" value={solvedProblems} icon={<CheckCircle size={32} />} color="var(--success)" />
+                <StatCard label="REBOOT CYCLES" value={revisionsDone} icon={<RotateCw size={32} />} color="var(--warning)" />
+            </motion.div>
 
             {/* Overall Progress */}
-            <div className="glass-panel" style={{ padding: '25px', marginBottom: '30px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Overall Progress</span>
-                    <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>{progressPercent}%</span>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="glass-panel" style={{ padding: '30px', marginBottom: '40px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                    <span style={{ color: 'var(--text-secondary)', fontWeight: 800, letterSpacing: '2px' }}>CORE DIRECTIVE PROGRESS</span>
+                    <span className="text-gradient-accent" style={{ fontSize: '1.5rem' }}>{progressPercent}%</span>
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px' }}>{solvedProblems} of {totalProblems} problems solved</div>
-                <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${progressPercent}%`, background: 'var(--accent-primary)', transition: 'width 0.5s ease' }}></div>
+                <div style={{ width: '100%', height: '12px', background: 'rgba(0,0,0,0.5)', borderRadius: '10px', overflow: 'hidden', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)' }}>
+                    <motion.div 
+                        initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, ease: "easeOut" }}
+                        style={{ height: '100%', background: 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))', boxShadow: '0 0 20px var(--accent-primary)' }}
+                    ></motion.div>
                 </div>
-            </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '15px', fontWeight: 600 }}>{solvedProblems} / {totalProblems} MODULES ENCRYPTED</div>
+            </motion.div>
 
             {/* Filters */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '15px', top: '10px', color: 'var(--text-secondary)' }}>🔍</span>
+                        <Search style={{ position: 'absolute', left: '15px', top: '15px', color: 'var(--accent-primary)' }} size={20} />
                         <input 
                             type="text" 
                             className="glass-input" 
-                            placeholder="Search topics, day or problem..." 
+                            placeholder="SCAN DIRECTORIES..." 
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            style={{ paddingLeft: '40px', width: '280px', borderRadius: '30px' }}
+                            style={{ paddingLeft: '45px', width: '320px', borderRadius: '12px' }}
                         />
                     </div>
                     {['All Days', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4'].map((phase, idx) => {
@@ -118,28 +151,27 @@ const DashboardPage = () => {
                         return (
                             <button 
                                 key={phase}
-                                className="glass-button"
-                                style={{ 
-                                    background: isActive ? 'var(--accent-primary)' : 'transparent', 
-                                    color: isActive ? '#000' : 'var(--text-secondary)',
-                                    border: isActive ? 'none' : '1px solid var(--border-color)',
-                                    borderRadius: '30px', padding: '8px 20px', boxShadow: 'none'
-                                }}
+                                className={`glass-button ${isActive ? '' : 'secondary'}`}
                                 onClick={() => setPhaseFilter(phaseCode)}
+                                style={{ padding: '12px 24px', borderRadius: '12px' }}
                             >
                                 {phase}
                             </button>
                         );
                     })}
                 </div>
-                <div>
-                    <button className="glass-button secondary" onClick={() => setShowModal(true)} style={{ marginRight: '15px' }}>+ Add Topic</button>
-                    <button className="glass-button" style={{ background: '#fff', color: '#000' }}>▶ Full Playlist</button>
+                <div style={{ display: 'flex', gap: '15px' }}>
+                    <button className="glass-button secondary" onClick={() => setShowModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Plus size={18} /> INITIALIZE TOPIC
+                    </button>
+                    <button className="glass-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Play size={18} /> PLAYLIST STREAM
+                    </button>
                 </div>
             </div>
 
             {/* Topics Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+            <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '30px' }}>
                 {filteredTopics.map((topic, index) => {
                     const probCount = topic.problems ? topic.problems.length : 0;
                     const solvedCount = topic.problems ? topic.problems.filter(p => p.solved).length : 0;
@@ -147,108 +179,109 @@ const DashboardPage = () => {
                     const medCount = topic.problems ? topic.problems.filter(p => p.difficulty === 'Medium').length : 0;
                     const hardCount = topic.problems ? topic.problems.filter(p => p.difficulty === 'Hard').length : 0;
                     const topicProgress = probCount > 0 ? Math.round((solvedCount / probCount) * 100) : 0;
-
                     const conceptsList = topic.concepts ? topic.concepts.split(',').map(c => c.trim()) : [];
                     
                     return (
-                        <div key={topic.id} className="glass-panel" style={{ padding: '25px', display: 'flex', flexDirection: 'column' }}>
+                        <motion.div variants={itemVariants} key={topic.id} className="glass-panel" style={{ padding: '30px', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '25px' }}>
-                                <div style={{ background: 'rgba(0, 223, 162, 0.1)', color: 'var(--accent-primary)', width: '35px', height: '35px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', marginRight: '15px' }}>
+                                <div style={{ background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-primary)', width: '45px', height: '45px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.2rem', marginRight: '15px', border: '1px solid rgba(0,240,255,0.3)', boxShadow: '0 0 15px rgba(0,240,255,0.2)' }}>
                                     {index + 1}
                                 </div>
-                                <h3 style={{ fontSize: '1.2rem', margin: 0, flex: 1 }}>{topic.title}</h3>
-                                <span style={{ background: 'rgba(139, 92, 246, 0.1)', color: 'var(--accent-secondary)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>{topic.phase}</span>
+                                <h3 style={{ fontSize: '1.4rem', margin: 0, flex: 1, textTransform: 'uppercase', letterSpacing: '1px' }}>{topic.title}</h3>
+                                <span style={{ background: 'rgba(188, 19, 254, 0.15)', color: 'var(--accent-secondary)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 900, border: '1px solid rgba(188,19,254,0.3)', boxShadow: '0 0 10px rgba(188,19,254,0.3)' }}>{topic.phase}</span>
                             </div>
                             
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '10px' }}>CONCEPTS</div>
-                            <ul style={{ listStyle: 'none', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px', minHeight: '60px' }}>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 900, letterSpacing: '2px', marginBottom: '12px' }}>DETECTED CONCEPTS</div>
+                            <ul style={{ listStyle: 'none', color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '25px', minHeight: '60px' }}>
                                 {conceptsList.map((concept, i) => (
-                                    <li key={i} style={{ marginBottom: '5px' }}><span style={{ color: 'var(--accent-primary)', marginRight: '8px' }}>›</span> {concept}</li>
+                                    <li key={i} style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                                        <div style={{ width: '6px', height: '6px', background: 'var(--accent-secondary)', borderRadius: '50%', boxShadow: '0 0 5px var(--accent-secondary)' }}></div> {concept}
+                                    </li>
                                 ))}
                             </ul>
 
-                            <button className="glass-button" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: 'none', alignSelf: 'flex-start', padding: '6px 15px', fontSize: '0.85rem', marginBottom: '25px' }}>
-                                ▶ Add Lecture URL
+                            <button className="glass-button secondary" style={{ alignSelf: 'flex-start', padding: '8px 18px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '30px' }}>
+                                <Video size={16} color="var(--info)" /> ATTACH DATA STREAM
                             </button>
                             
                             <div style={{ marginTop: 'auto' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                                    <span>{solvedCount}/{probCount} solved</span>
-                                    <span style={{ color: 'var(--accent-primary)' }}>{topicProgress}%</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 800 }}>
+                                    <span>{solvedCount}/{probCount} SECURED</span>
+                                    <span style={{ color: 'var(--accent-primary)', textShadow: '0 0 10px var(--accent-primary)' }}>{topicProgress}%</span>
                                 </div>
-                                <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden', marginBottom: '10px' }}>
-                                    <div style={{ height: '100%', width: `${topicProgress}%`, background: 'var(--accent-primary)' }}></div>
+                                <div style={{ width: '100%', height: '6px', background: 'rgba(0,0,0,0.5)', borderRadius: '3px', overflow: 'hidden', marginBottom: '15px' }}>
+                                    <div style={{ height: '100%', width: `${topicProgress}%`, background: 'var(--accent-primary)', boxShadow: '0 0 10px var(--accent-primary)' }}></div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '15px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                                    <span style={{ color: 'var(--success)' }}>✓ {easyCount} Easy</span>
-                                    <span style={{ color: 'var(--warning)' }}>♦ {medCount} Med</span>
-                                    <span style={{ color: 'var(--danger)' }}>★ {hardCount} Hard</span>
+                                <div style={{ display: 'flex', gap: '15px', fontSize: '0.85rem', fontWeight: 800 }}>
+                                    <span style={{ color: 'var(--success)' }}>E:{easyCount}</span>
+                                    <span style={{ color: 'var(--warning)' }}>M:{medCount}</span>
+                                    <span style={{ color: 'var(--danger)' }}>H:{hardCount}</span>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '25px', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
-                                <div style={{ display: 'flex', gap: '20px', fontSize: '0.8rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ display: 'flex', gap: '25px', fontSize: '0.85rem' }}>
                                     <label className="modern-checkbox">
                                         <input type="checkbox" checked={topic.lectureDone} onChange={() => toggleTopicProgress(topic.id, 'lectureDone', topic.lectureDone)} />
-                                        <div className="checkmark"></div> Lecture
+                                        <div className="checkmark"></div> LECTURE
                                     </label>
                                     <label className="modern-checkbox">
                                         <input type="checkbox" checked={topic.practiceDone} onChange={() => toggleTopicProgress(topic.id, 'practiceDone', topic.practiceDone)} />
-                                        <div className="checkmark"></div> Practice
+                                        <div className="checkmark"></div> PRAC
                                     </label>
                                     <label className="modern-checkbox">
                                         <input type="checkbox" checked={topic.dayDone} onChange={() => toggleTopicProgress(topic.id, 'dayDone', topic.dayDone)} />
-                                        <div className="checkmark"></div> Day ✓
+                                        <div className="checkmark"></div> DAY
                                     </label>
                                 </div>
                                 <button 
                                     className="glass-button" 
-                                    style={{ background: 'transparent', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', padding: '6px 15px', fontSize: '0.85rem' }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 18px', fontSize: '0.85rem' }}
                                     onClick={() => navigate(`/topics/${topic.id}/problems`)}
                                 >
-                                    View Problems ({probCount}) →
+                                    ACCESS <ExternalLink size={16} />
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     );
                 })}
-            </div>
+            </motion.div>
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="glass-panel modal-content" style={{ background: '#1a1f2e' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Add Topic</h2>
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel modal-content" style={{ background: 'rgba(10,10,15,0.95)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                            <h2 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--accent-primary)', fontWeight: 900, textTransform: 'uppercase' }}>Initialize New Protocol</h2>
                             <button className="modal-close" style={{ position: 'static' }} onClick={() => setShowModal(false)}>×</button>
                         </div>
                         <form onSubmit={handleCreateTopic}>
                             <div className="form-group">
-                                <label>TOPIC TITLE *</label>
+                                <label>PROTOCOL DESIGNATION *</label>
                                 <input type="text" className="glass-input" required value={newTopic.title} onChange={e => setNewTopic({...newTopic, title: e.target.value})} placeholder="e.g. Arrays Basics" />
                             </div>
                             <div className="form-group">
-                                <label>PHASE</label>
-                                <select className="glass-input" value={newTopic.phase} onChange={e => setNewTopic({...newTopic, phase: e.target.value})}>
-                                    <option value="P1">P1</option>
-                                    <option value="P2">P2</option>
-                                    <option value="P3">P3</option>
-                                    <option value="P4">P4</option>
+                                <label>PHASE DIRECTIVE</label>
+                                <select className="glass-input" value={newTopic.phase} onChange={e => setNewTopic({...newTopic, phase: e.target.value})} style={{ appearance: 'none' }}>
+                                    <option value="P1">P1 - CORE</option>
+                                    <option value="P2">P2 - ADVANCED</option>
+                                    <option value="P3">P3 - EXPERT</option>
+                                    <option value="P4">P4 - MASTER</option>
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label>CONCEPTS (comma separated)</label>
+                                <label>DETECTED CONCEPTS</label>
                                 <input type="text" className="glass-input" value={newTopic.concepts} onChange={e => setNewTopic({...newTopic, concepts: e.target.value})} placeholder="Array Traversal, Prefix Sum" />
                             </div>
                             <div className="form-group">
-                                <label>LECTURE URL</label>
+                                <label>DATA STREAM URL</label>
                                 <input type="text" className="glass-input" value={newTopic.lectureUrl} onChange={e => setNewTopic({...newTopic, lectureUrl: e.target.value})} placeholder="https://..." />
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-                                <button type="button" className="glass-button secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="submit" className="glass-button" style={{ background: 'var(--accent-primary)', color: '#000' }}>Add Topic</button>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '35px' }}>
+                                <button type="button" className="glass-button secondary" onClick={() => setShowModal(false)}>ABORT</button>
+                                <button type="submit" className="glass-button">INITIALIZE</button>
                             </div>
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>
